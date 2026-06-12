@@ -1,0 +1,24 @@
+Group #BuffLedgerRoot {
+  Anchor: (Top: 10, Left: 10);
+  LayoutMode: Top;
+
+  Label #BlLine1 {
+    Text: "";
+    Style: (FontSize: 12, TextColor: #ffdd88(1), RenderBold: true);
+  }
+
+  Label #BlLine2 {
+    Text: "";
+    Style: (FontSize: 11, TextColor: #e8eef5(1));
+  }
+
+  Label #BlLine3 {
+    Text: "";
+    Style: (FontSize: 11, TextColor: #e8eef5(1));
+  }
+
+  Label #BlLine4 {
+    Text: "";
+    Style: (FontSize: 11, TextColor: #e8eef5(1));
+  }
+}

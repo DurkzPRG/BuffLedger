@@ -1,0 +1,19 @@
+{
+    "Group": "durkz",
+    "Name": "BuffLedger",
+    "Version": "0.1.0",
+    "Description": "On-screen ledger of active buffs and debuffs with remaining duration (vanilla food, potions, ambient effects).",
+    "Authors": [
+        {
+            "Name": "Durkz"
+        }
+    ],
+    "Website": "https://github.com/DurkzPRG/BuffLedger",
+    "ServerVersion": ">=0.5.3",
+    "OptionalDependencies": {
+        "Buuz135:MultipleHUD": "*"
+    },
+    "DisabledByDefault": false,
+    "Main": "com.durkz.buffledger.BuffLedgerPlugin",
+    "IncludesAssetPack": true
+}
