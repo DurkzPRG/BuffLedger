@@ -1,5 +1,5 @@
 Group #BuffLedgerRoot {
-  Anchor: (Top: 10, Left: 10);
+  Anchor: (Width: 280, Height: 170, Left: 12, Bottom: 118);
   LayoutMode: Top;
 
   Label #BlLine1 {
@@ -18,6 +18,26 @@ Group #BuffLedgerRoot {
   }
 
   Label #BlLine4 {
+    Text: "";
+    Style: (FontSize: 11, TextColor: #e8eef5(1));
+  }
+
+  Label #BlLine5 {
+    Text: "";
+    Style: (FontSize: 11, TextColor: #e8eef5(1));
+  }
+
+  Label #BlLine6 {
+    Text: "";
+    Style: (FontSize: 11, TextColor: #e8eef5(1));
+  }
+
+  Label #BlLine7 {
+    Text: "";
+    Style: (FontSize: 11, TextColor: #e8eef5(1));
+  }
+
+  Label #BlLine8 {
     Text: "";
     Style: (FontSize: 11, TextColor: #e8eef5(1));
   }

@@ -5,11 +5,7 @@ import com.hypixel.hytale.server.core.entity.entities.player.hud.CustomUIHud;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 
 /**
- * Shows a durkz HUD slot. Native path uses HudManager.addCustomHud (LeanCore pattern).
- * When Buuz135 MultipleHUD is present, register the same CustomUIHud through its API
- * so BuffLedger can coexist with LeanCore, TaleStatistics, EyeSpy, etc.
- *
- * @see claude-cursor/PLAYER_QOL_MODS.md
+ * Native HUD slot via HudManager.addCustomHud. Optional MultipleHUD bridge when present.
  */
 public final class HudBridge {
 

@@ -11,7 +11,9 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class BuffSnapshotService {
 
@@ -20,23 +22,7 @@ public class BuffSnapshotService {
         if (controller == null) {
             return List.of();
         }
-
-        List<ActiveBuff> out = collectFromController(controller);
-        if (!out.isEmpty()) {
-            return out;
-        }
-
-        ActiveEntityEffect[] active = controller.getAllActiveEntityEffects();
-        if (active == null || active.length == 0) {
-            return List.of();
-        }
-        out = new ArrayList<>(active.length);
-        for (ActiveEntityEffect entry : active) {
-            if (entry != null) {
-                out.add(toActiveBuff(entry));
-            }
-        }
-        return sortAndFreeze(out);
+        return collectAll(controller);
     }
 
     private static EffectControllerComponent resolveController(
@@ -56,15 +42,77 @@ public class BuffSnapshotService {
         return null;
     }
 
-    private static List<ActiveBuff> collectFromController(EffectControllerComponent controller) {
+    private static List<ActiveBuff> collectAll(EffectControllerComponent controller) {
+        Map<Integer, ActiveEntityEffect> unique = new LinkedHashMap<>();
+
         Int2ObjectMap<ActiveEntityEffect> active = controller.getActiveEffects();
-        if (active == null || active.isEmpty()) {
+        if (active != null) {
+            for (ActiveEntityEffect entry : active.values()) {
+                if (entry != null) {
+                    unique.put(entry.getEntityEffectIndex(), entry);
+                }
+            }
+        }
+
+        ActiveEntityEffect[] all = controller.getAllActiveEntityEffects();
+        if (all != null) {
+            for (ActiveEntityEffect entry : all) {
+                if (entry != null) {
+                    unique.putIfAbsent(entry.getEntityEffectIndex(), entry);
+                }
+            }
+        }
+
+        if (unique.isEmpty()) {
             return List.of();
         }
-        List<ActiveBuff> out = new ArrayList<>(active.size());
-        for (ActiveEntityEffect entry : active.values()) {
-            if (entry != null) {
-                out.add(toActiveBuff(entry));
+
+        List<ActiveBuff> out = new ArrayList<>(unique.size());
+        for (ActiveEntityEffect entry : unique.values()) {
+            out.add(toActiveBuff(entry));
+        }
+        return mergeStacks(out);
+    }
+
+    private static List<ActiveBuff> mergeStacks(List<ActiveBuff> raw) {
+        if (raw.size() <= 1) {
+            return sortAndFreeze(raw);
+        }
+
+        Map<String, ActiveBuff> merged = new LinkedHashMap<>();
+        Map<String, Integer> stackCounts = new LinkedHashMap<>();
+        for (ActiveBuff buff : raw) {
+            stackCounts.merge(buff.effectId(), 1, Integer::sum);
+            ActiveBuff existing = merged.get(buff.effectId());
+            if (existing == null) {
+                merged.put(buff.effectId(), buff);
+                continue;
+            }
+            merged.put(buff.effectId(), new ActiveBuff(
+                    buff.effectId(),
+                    buff.displayName(),
+                    Math.max(existing.remainingMs(), buff.remainingMs()),
+                    existing.infinite() || buff.infinite(),
+                    existing.debuff(),
+                    existing.stacks()
+            ));
+        }
+
+        List<ActiveBuff> out = new ArrayList<>(merged.size());
+        for (Map.Entry<String, ActiveBuff> entry : merged.entrySet()) {
+            ActiveBuff buff = entry.getValue();
+            int stacks = stackCounts.getOrDefault(entry.getKey(), 1);
+            if (stacks <= 1) {
+                out.add(buff);
+            } else {
+                out.add(new ActiveBuff(
+                        buff.effectId(),
+                        buff.displayName(),
+                        buff.remainingMs(),
+                        buff.infinite(),
+                        buff.debuff(),
+                        stacks
+                ));
             }
         }
         return sortAndFreeze(out);

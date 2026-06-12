@@ -5,11 +5,17 @@ public record ActiveBuff(
         String displayName,
         long remainingMs,
         boolean infinite,
-        boolean debuff
+        boolean debuff,
+        int stacks
 ) {
+
+    public ActiveBuff(String effectId, String displayName, long remainingMs, boolean infinite, boolean debuff) {
+        this(effectId, displayName, remainingMs, infinite, debuff, 1);
+    }
 
     public String hudToken() {
         char sign = debuff ? '-' : '+';
-        return sign + displayName + ' ' + BuffDurationFormat.format(remainingMs, infinite);
+        String stackSuffix = stacks > 1 ? " x" + stacks : "";
+        return sign + displayName + stackSuffix + ' ' + BuffDurationFormat.format(remainingMs, infinite);
     }
 }

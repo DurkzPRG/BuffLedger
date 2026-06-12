@@ -4,14 +4,12 @@ import com.hypixel.hytale.server.core.entity.entities.player.hud.CustomUIHud;
 import com.hypixel.hytale.server.core.ui.builder.UICommandBuilder;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 
-import java.util.Arrays;
-
 public class BuffLedgerHud extends CustomUIHud {
 
     public static final String KEY = "durkz:buff_ledger";
-    public static final int LINE_COUNT = 4;
+    public static final int LINE_COUNT = 8;
 
-    private final String[] lines = {"", "", "", ""};
+    private final String[] lines = {"", "", "", "", "", "", "", ""};
 
     public BuffLedgerHud(PlayerRef playerRef) {
         super(playerRef, KEY, 40);
@@ -36,6 +34,10 @@ public class BuffLedgerHud extends CustomUIHud {
         ui.set("#BlLine2.Text", lines[1]);
         ui.set("#BlLine3.Text", lines[2]);
         ui.set("#BlLine4.Text", lines[3]);
+        ui.set("#BlLine5.Text", lines[4]);
+        ui.set("#BlLine6.Text", lines[5]);
+        ui.set("#BlLine7.Text", lines[6]);
+        ui.set("#BlLine8.Text", lines[7]);
     }
 
     private static String sanitize(String value) {

@@ -3,7 +3,9 @@ package com.durkz.buffledger;
 import com.durkz.buffledger.buff.BuffSnapshotService;
 import com.durkz.buffledger.command.BuffCommand;
 import com.durkz.buffledger.hud.BuffLedgerHudService;
+import com.durkz.buffledger.prefs.BuffLedgerPrefs;
 import com.hypixel.hytale.server.core.event.events.player.PlayerDisconnectEvent;
+import com.hypixel.hytale.server.core.event.events.player.PlayerReadyEvent;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
@@ -35,11 +37,12 @@ public class BuffLedgerPlugin extends JavaPlugin {
     protected void setup() {
         super.setup();
         snapshotService = new BuffSnapshotService();
-        hudService = new BuffLedgerHudService(snapshotService);
+        hudService = new BuffLedgerHudService(snapshotService, new BuffLedgerPrefs(getDataDirectory()));
         getCommandRegistry().registerCommand(new BuffCommand());
+        getEventRegistry().registerGlobal(PlayerReadyEvent.class, e -> hudService.onPlayerReady(e));
         getEventRegistry().registerGlobal(PlayerDisconnectEvent.class, e -> {
             if (e.getPlayerRef() != null) {
-                hudService.onDisconnect(e.getPlayerRef().getUuid());
+                hudService.onDisconnect(e.getPlayerRef());
             }
         });
         getLogger().atInfo().log("BuffLedger %s setup.", getManifest().getVersion());
@@ -49,7 +52,7 @@ public class BuffLedgerPlugin extends JavaPlugin {
     protected void start() {
         super.start();
         if (hudService != null) {
-            hudService.start(this);
+            hudService.start();
         }
     }
 

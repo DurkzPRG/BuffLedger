@@ -49,7 +49,8 @@ public class BuffCommand extends AbstractAsyncCommand {
                 return;
             }
             if (plugin.hudService().enable(playerRef, store, ref)) {
-                ctx.sendMessage(Message.raw("Buff ledger HUD on").color("#55FF55"));
+                ctx.sendMessage(Message.raw("Buff ledger tracking on (HUD shows when you have active effects)")
+                        .color("#55FF55"));
             }
         }
     }
@@ -67,7 +68,7 @@ public class BuffCommand extends AbstractAsyncCommand {
                 return;
             }
             plugin.hudService().disable(playerRef, store, ref);
-            ctx.sendMessage(Message.raw("Buff ledger HUD off").color("#AAAAAA"));
+            ctx.sendMessage(Message.raw("Buff ledger tracking off").color("#AAAAAA"));
         }
     }
 
@@ -84,9 +85,13 @@ public class BuffCommand extends AbstractAsyncCommand {
                 return;
             }
             BuffLedgerHudService hud = plugin.hudService();
-            boolean on = hud.isEnabled(playerRef.getUuid());
+            boolean tracking = hud.isEnabled(playerRef.getUuid());
+            boolean visible = hud.isVisible(playerRef.getUuid());
             int count = hud.readActive(playerRef, store, ref).size();
-            ctx.sendMessage(Message.raw("Buff ledger HUD: " + (on ? "on" : "off") + " | tracked effects: " + count)
+            ctx.sendMessage(Message.raw(
+                            "Buff ledger tracking: " + (tracking ? "on" : "off")
+                                    + " | HUD visible: " + (visible ? "yes" : "no")
+                                    + " | active effects: " + count)
                     .color("#FFAA00"));
         }
     }

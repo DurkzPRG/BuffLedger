@@ -6,8 +6,11 @@ import java.util.regex.Pattern;
 
 final class BuffLabelFormatter {
 
-    private static final Pattern FOOD_TIER = Pattern.compile("_T([123])$");
+    private static final Pattern FOOD_TIER = Pattern.compile("_T([1-5])$");
     private static final Pattern POTION_TIER = Pattern.compile("_(Lesser|Small|Large|Greater)$");
+    private static final Pattern SIZED_BUFF = Pattern.compile(
+            "^(Speed|Fire_Resistance|Poison_Resistance|Resistance|Water_Breathing)_(Tiny|Small|Medium)$"
+    );
 
     private BuffLabelFormatter() {}
 
@@ -35,6 +38,11 @@ final class BuffLabelFormatter {
             return "Morph " + effectId.substring("Potion_Morph_".length()).replace('_', ' ');
         }
 
+        String nepLabel = notEnoughPotionsLabel(effectId);
+        if (nepLabel != null) {
+            return nepLabel;
+        }
+
         if (effectId.startsWith("Meat_Buff_")) {
             return "Max HP " + foodTier(effectId);
         }
@@ -60,7 +68,69 @@ final class BuffLabelFormatter {
             return "Instant Heal " + sizeLabel(effectId.substring("Food_Instant_Heal_".length()));
         }
 
+        String sizedBuff = sizedBuffLabel(effectId);
+        if (sizedBuff != null) {
+            return sizedBuff;
+        }
+
+        if (effectId.startsWith("Juice_")) {
+            return juiceLabel(effectId);
+        }
+
         return compactHumanize(effectId);
+    }
+
+    private static String notEnoughPotionsLabel(String effectId) {
+        return switch (effectId) {
+            case "Potion_Speed" -> "Speed";
+            case "Potion_Speed_Greater" -> "Speed (Greater)";
+            case "Potion_Strength" -> "Strength";
+            case "Potion_Resistance" -> "Resistance";
+            case "Potion_Fire_Resist" -> "Fire Resist";
+            case "Potion_Water_Breathe" -> "Water Breathing";
+            case "Potion_Water_Breathe_Greater" -> "Water Breathing (Greater)";
+            case "Potion_Life_Steal" -> "Life Steal";
+            case "Potion_Thorns" -> "Thorns";
+            case "Potion_Fall_Damage" -> "Fall Protection";
+            case "Potion_Jump_Boost" -> "Jump Boost";
+            case "Potion_Levitation" -> "Levitation";
+            case "Potion_Invisibility" -> "Invisibility";
+            case "Potion_Invisibility_Splash" -> "Invisibility (Splash)";
+            case "Potion_Night_Vision" -> "Night Vision";
+            case "Potion_Scale_Grow" -> "Giant Form";
+            case "Potion_Scale_Shrink" -> "Tiny Form";
+            case "Potion_Stamina_Plus" -> "Max Stamina";
+            case "Potion_Stamina_Plus_Greater" -> "Max Stamina (Greater)";
+            case "Potion_Poison" -> "Poison";
+            case "Potion_Freeze" -> "Frozen";
+            case "Potion_Healing_Splash" -> "Heal (Splash)";
+            case "Teleport_Departure" -> "Teleporting";
+            case "Teleport_Arrival" -> "Teleport";
+            default -> null;
+        };
+    }
+
+    private static String sizedBuffLabel(String effectId) {
+        Matcher matcher = SIZED_BUFF.matcher(effectId);
+        if (!matcher.matches()) {
+            return null;
+        }
+        String base = switch (matcher.group(1)) {
+            case "Fire_Resistance" -> "Fire Resist";
+            case "Poison_Resistance" -> "Poison Resist";
+            case "Water_Breathing" -> "Water Breathing";
+            default -> matcher.group(1).replace('_', ' ');
+        };
+        return base + " (" + matcher.group(2) + ")";
+    }
+
+    private static String juiceLabel(String effectId) {
+        return switch (effectId) {
+            case "Juice_Health_Instant" -> "Juice HP Heal";
+            case "Juice_Health_Regen" -> "Juice HP Regen";
+            case "Juice_Stamina_Instant" -> "Juice Stamina Heal";
+            default -> "Juice " + sizeLabel(effectId.substring("Juice_".length()));
+        };
     }
 
     private static String potionTier(String effectId, String prefix) {
@@ -100,7 +170,7 @@ final class BuffLabelFormatter {
             String base = cleaned.substring(0, potion.start()).trim();
             return base + " (" + tier + ")";
         }
-        Matcher food = Pattern.compile(" T([123])$").matcher(cleaned);
+        Matcher food = Pattern.compile(" T([1-5])$").matcher(cleaned);
         if (food.find()) {
             return cleaned.substring(0, food.start()) + " T" + food.group(1);
         }

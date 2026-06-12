@@ -11,7 +11,9 @@
     "Website": "https://github.com/DurkzPRG/BuffLedger",
     "ServerVersion": ">=0.5.3",
     "OptionalDependencies": {
-        "Buuz135:MultipleHUD": "*"
+        "Buuz135:MultipleHUD": "*",
+        "nep:NotEnoughPotions": "*",
+        "BeyondSmash:BuffStacks": "*"
     },
     "DisabledByDefault": false,
     "Main": "com.durkz.buffledger.BuffLedgerPlugin",
